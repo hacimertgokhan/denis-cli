@@ -1,5 +1,4 @@
-use serde::Deserialize;
-#[derive(Deserialize, Debug)]
+#[derive(serde::Deserialize, Debug, Default)]
 pub struct LanguageModal {
     #[serde(rename = "monitoring-started")]
     pub monitoring_started: String,

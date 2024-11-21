@@ -1,16 +1,19 @@
 mod lang_reader;
 mod global;
+mod utils;
 
 use std::io;
 use std::io::{Read, Write};
 use clap::{arg, CommandFactory, Error, Parser, Subcommand};
 use crate::global::initialize_cli_language;
 use crate::lang_reader::read_json_file;
+use crate::utils::print_element;
 
 #[derive(Parser)]
 #[command(name = "Denis CLI")]
 #[command(version = "1.0.0")]
 #[command(about = "DenisCLI, Manage your denisdb with cli.", long_about = None)]
+#[command(disable_help_subcommand = true, disable_help_subcommand = true)]
 struct Cli {
     /// Alt komutlar
     #[command(subcommand)]
@@ -19,7 +22,9 @@ struct Cli {
 
 #[derive(Subcommand)]
 enum Commands {
+    #[command(about = "Display help information for the CLI")]
     Help,
+    #[command(about = "Exit the application")]
     Exit,
 }
 
@@ -27,7 +32,7 @@ fn main() {
     initialize_cli_language();
     match read_json_file() {
         Ok(language_modal) => {
-            println!("{:?}", language_modal.startup_information);
+            print_element(language_modal.startup_information);
             loop {
                 print!("denis: ");
                 io::stdout().flush().unwrap();
@@ -40,7 +45,7 @@ fn main() {
                     .collect::<Vec<_>>();
 
                 if args.iter().any(|&arg| arg == "exit" || arg == "--exit") {
-                    println!("{:?}", language_modal.bye);
+                    println!("{}", language_modal.bye.to_string());
                     break;
                 }
 
@@ -49,7 +54,8 @@ fn main() {
                         if let Some(command) = cli.command {
                             match command {
                                 Commands::Help => {
-                                    println!("{:?}", language_modal.help);
+                                    print_element(language_modal.help.clone());
+                                    continue;
                                 }
                                 Commands::Exit => {
                                     println!("{:?}", language_modal.bye);
