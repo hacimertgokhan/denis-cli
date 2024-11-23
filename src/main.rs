@@ -1,12 +1,18 @@
 mod lang_reader;
 mod global;
 mod utils;
+mod cli {
+    pub mod denis;
+}
+mod repository;
 
 use std::io;
 use std::io::{Read, Write};
 use clap::{arg, CommandFactory, Error, Parser, Subcommand};
+use crate::cli::denis::{create_denis_properties, watch_denis_service};
 use crate::global::initialize_cli_language;
 use crate::lang_reader::read_json_file;
+use crate::repository::get_latest_version;
 use crate::utils::print_element;
 
 #[derive(Parser)]
@@ -22,13 +28,25 @@ struct Cli {
 
 #[derive(Subcommand)]
 enum Commands {
+    #[command(about = "Manage or create denis.properties file.")]
+    Properties {
+        #[arg(short, long)]
+        create: bool,
+        #[arg(short, long)]
+        delete: bool,
+    },
     #[command(about = "Display help information for the CLI")]
     Help,
+    #[command(about = "Watch ddb memory usage.")]
+    Watch,
+    #[command(about = "Get current denis-cli version")]
+    Version,
     #[command(about = "Exit the application")]
     Exit,
 }
 
-fn main() {
+#[tokio::main]
+async fn main() {
     initialize_cli_language();
     match read_json_file() {
         Ok(language_modal) => {
@@ -53,6 +71,16 @@ fn main() {
                     Ok(cli) => {
                         if let Some(command) = cli.command {
                             match command {
+                                Commands::Properties {create, delete} => {
+                                    if create {
+                                        if let Err(e) = create_denis_properties() {
+                                            eprintln!("Error: {}", e);
+                                        }
+                                    } else {
+                                        println!("Missing required options for denis CLI");
+                                        continue;
+                                    }
+                                }
                                 Commands::Help => {
                                     print_element(language_modal.help.clone());
                                     continue;
@@ -60,6 +88,12 @@ fn main() {
                                 Commands::Exit => {
                                     println!("{:?}", language_modal.bye);
                                     break;
+                                }
+                                Commands::Version => {
+                                    get_latest_version(language_modal.version.to_string()).await;
+                                }
+                                Commands::Watch => {
+                                    watch_denis_service();
                                 }
                             }
                         }

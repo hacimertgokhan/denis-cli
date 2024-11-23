@@ -1,4 +1,5 @@
 {
+  "version": "1.0.1",
   "bye": "Çıkış yapılıyor",
   "monitoring-started": "Hafıza izleme başlatıldı, çıkış yapmak için: (--finish)",
   "max-token-size": "Oluşturulabilecek maksimum token miktarı %s olarak ayarlandı.",

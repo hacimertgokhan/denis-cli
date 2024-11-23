@@ -54,6 +54,9 @@ pub struct LanguageModal {
     #[serde(rename = "denis-global-logger")]
     pub denis_global_logger: String,
 
+    #[serde(rename = "version")]
+    pub version: String,
+
     #[serde(rename = "listen-memory")]
     pub listen_memory: Vec<String>,
 

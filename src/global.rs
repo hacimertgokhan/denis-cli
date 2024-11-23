@@ -7,7 +7,7 @@ use std::sync::RwLock;
 #[derive(Deserialize, Debug)]
 pub struct LanguageModal {
     pub language: String,
-    pub description: String,
+    pub current_version: String,
 }
 
 // JSON dosyasını okuma fonksiyonu
